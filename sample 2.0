@@ -1,3 +1,4 @@
+// ---------------- Bluetooth (RemoteXY) ----------------
 #define REMOTEXY_MODE__SOFTSERIAL
 #include <SoftwareSerial.h>
 
@@ -7,7 +8,6 @@
 
 #include <RemoteXY.h>
 
-// RemoteXY config
 #pragma pack(push, 1)
 uint8_t const PROGMEM RemoteXY_CONF_PROGMEM[] = {
   255,1,0,11,0,31,0,19,0,0,0,0,27,1,106,200,1,1,2,0,
@@ -21,6 +21,7 @@ struct {
 } RemoteXY;
 #pragma pack(pop)
 
+// ---------------- LIBRARIES ----------------
 #include <SPI.h>
 #include <MFRC522.h>
 #include <Keypad.h>
@@ -34,6 +35,8 @@ struct {
 
 // ---------------- RFID ----------------
 MFRC522 rfid(SS_PIN, RST_PIN);
+byte allowedUID[] = {0xDE, 0xAD, 0xBE, 0xEF};
+const byte uidSize = 4;
 
 // ---------------- LCD ----------------
 LiquidCrystal_I2C lcd(0x27, 16, 2);
@@ -57,13 +60,11 @@ Keypad keypad = Keypad(makeKeymap(keys), rowPins, colPins, ROWS, COLS);
 // ---------------- SECURITY ----------------
 String correctPIN = "1234";
 String inputPIN = "";
-
-byte allowedUID[] = {0xDE, 0xAD, 0xBE, 0xEF};
-const byte uidSize = 4;
+String lastOpenedBy = "None";
 
 bool unlocked = false;
 
-// ---------------- LOCK CONTROL ----------------
+// ---------------- FUNCTIONS ----------------
 void lockDoor() {
   digitalWrite(LOCK_BUZZER_PIN, LOW);
   unlocked = false;
@@ -71,14 +72,26 @@ void lockDoor() {
   lcd.print("Door Locked");
 }
 
-void unlockDoor() {
+void unlockDoor(String source) {
   digitalWrite(LOCK_BUZZER_PIN, HIGH);
   unlocked = true;
+
+  lastOpenedBy = source;
+
   lcd.clear();
-  lcd.print("Door Unlocked");
+  lcd.print("Opened by:");
+  lcd.setCursor(0, 1);
+  lcd.print(source);
+
+  // Bluetooth app
+  lastOpenedBy.toCharArray(RemoteXY.value_01, 11);
+
+  delay(5000);
+
+  lockDoor();
 }
 
-// ---------------- RFID  ----------------
+// ---------------- RFID CHECK ----------------
 bool checkRFID() {
   if (!rfid.PICC_IsNewCardPresent()) return false;
   if (!rfid.PICC_ReadCardSerial()) return false;
@@ -110,6 +123,7 @@ void setup() {
   lcd.print("Ready");
 
   RemoteXY_Init();
+  strcpy(RemoteXY.value_01, "None");
 }
 
 // ---------------- LOOP ----------------
@@ -117,22 +131,17 @@ void loop() {
 
   RemoteXY_Handler();
 
-  // ---- BLUETOOTH CONTROL ----
+  // ---- BLUETOOTH ----
   if (RemoteXY.connect_flag && RemoteXY.button_01 == 1) {
-    unlockDoor();
+    unlockDoor("Bluetooth");
   }
 
-  // auto-lock
-  if (RemoteXY.button_01 == 0 && unlocked) {
-    lockDoor();
-  }
-
-  // ---- RFID CONTROL ----
+  // ---- RFID ----
   if (!unlocked && checkRFID()) {
-    unlockDoor();
+    unlockDoor("RFID");
   }
 
-  // ---- KEYPAD CONTROL ----
+  // ---- KEYPAD ----
   char key = keypad.getKey();
 
   if (key) {
@@ -140,7 +149,7 @@ void loop() {
 
     if (key == '#') {
       if (inputPIN == correctPIN) {
-        unlockDoor();
+        unlockDoor("PIN");
       } else {
         lcd.print("Wrong PIN");
         delay(800);
