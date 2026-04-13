@@ -98,7 +98,7 @@ void unlockDoor(String source)
   // Bluetooth app
   lastOpenedBy.toCharArray(RemoteXY.value_01, 11);
 
-  delay(5000);
+  RemoteXYEngine.delay(5000);
 
   lockDoor();
 }
@@ -111,7 +111,8 @@ bool checkRFID() {
   if (rfid.uid.size != uidSize) return false;
 
   for (byte i = 0; i < uidSize; i++) {
-    if (rfid.uid.uidByte[i] != allowedUID[i]) {
+    if (rfid.uid.uidByte[i] != allowedUID[i]) 
+    {
       rfid.PICC_HaltA();
       return false;
     }
@@ -139,7 +140,8 @@ void setup() {
 }
 
 // ---------------- LOOP ----------------
-void loop() {
+void loop() 
+{
 
   RemoteXY_Handler();
 
@@ -155,30 +157,37 @@ void loop() {
   }
 
   // ---- RFID ----
-  if (!unlocked && checkRFID()) {
+  if (!unlocked && checkRFID()) 
+  {
     unlockDoor("RFID");
   }
 
   // ---- KEYPAD ----
   char key = keypad.getKey();
 
-  if (key) {
+  if (key) 
+  {
     lcd.clear();
 
     if (key == '#') {
-      if (inputPIN == correctPIN) {
+      if (inputPIN == correctPIN) 
+      {
         unlockDoor("PIN");
-      } else {
+      } 
+      else 
+      {
         lcd.print("Wrong PIN");
-        delay(800);
+        RemoteXYEngine.delay(800);
         lockDoor();
       }
       inputPIN = "";
     }
-    else if (key == '*') {
+    else if (key == '*') 
+    {
       inputPIN = "";
     }
-    else {
+    else 
+    {
       inputPIN += key;
     }
 
