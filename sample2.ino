@@ -2,19 +2,21 @@
 #define REMOTEXY_MODE__SOFTSERIAL
 #include <SoftwareSerial.h>
 
-#define REMOTEXY_SERIAL_RX A2
-#define REMOTEXY_SERIAL_TX A1
+#define REMOTEXY_SERIAL_RX A1
+#define REMOTEXY_SERIAL_TX A2
 #define REMOTEXY_SERIAL_SPEED 9600
 
 #include <RemoteXY.h>
 
 #pragma pack(push, 1)
-uint8_t const PROGMEM RemoteXY_CONF_PROGMEM[] = {
+uint8_t const PROGMEM RemoteXY_CONF_PROGMEM[] = 
+{
   255,1,0,11,0,31,0,19,0,0,0,0,27,1,106,200,1,1,2,0,
   67,23,141,66,11,68,64,26,11,1,36,54,34,34,1,2,64,0
 };
 
-struct {
+struct 
+{
   uint8_t button_01;
   char value_01[11];
   uint8_t connect_flag;
@@ -45,7 +47,8 @@ LiquidCrystal_I2C lcd(0x27, 16, 2);
 const byte ROWS = 4;
 const byte COLS = 4;
 
-char keys[ROWS][COLS] = {
+char keys[ROWS][COLS] = 
+{
   {'1','2','3','A'},
   {'4','5','6','B'},
   {'7','8','9','C'},
@@ -65,14 +68,16 @@ String lastOpenedBy = "None";
 bool unlocked = false;
 
 // ---------------- FUNCTIONS ----------------
-void lockDoor() {
+void lockDoor()
+{
   digitalWrite(LOCK_BUZZER_PIN, LOW);
   unlocked = false;
   lcd.clear();
   lcd.print("Door Locked");
 }
 
-void unlockDoor(String source) {
+void unlockDoor(String source) 
+{
   digitalWrite(LOCK_BUZZER_PIN, HIGH);
   unlocked = true;
 
