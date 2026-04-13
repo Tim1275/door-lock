@@ -6,11 +6,6 @@
 #define REMOTEXY_SERIAL_TX A2
 #define REMOTEXY_SERIAL_SPEED 9600
 
-// RemoteXY connection settings 
-#define REMOTEXY_SERIAL_RX 2
-#define REMOTEXY_SERIAL_TX 3
-#define REMOTEXY_SERIAL_SPEED 9600
-
 #include <RemoteXY.h>
 
 // RemoteXY GUI configuration  
