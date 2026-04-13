@@ -146,7 +146,7 @@ void loop()
   RemoteXY_Handler();
 
   // ---- BLUETOOTH ----
-  if (RemoteXY.connect_flag && RemoteXY.button_01 == 1) 
+  if (RemoteXY.connect_flag && RemoteXY.button_01 !=0) 
   {
     Serial.print(1);
     unlockDoor("Bluetooth");
