@@ -132,8 +132,14 @@ void loop() {
   RemoteXY_Handler();
 
   // ---- BLUETOOTH ----
-  if (RemoteXY.connect_flag && RemoteXY.button_01 == 1) {
+  if (RemoteXY.connect_flag && RemoteXY.button_01 == 1) 
+  {
+    Serial.print(1);
     unlockDoor("Bluetooth");
+  }
+  else
+  {
+    Serial.print(0);
   }
 
   // ---- RFID ----
