@@ -1,3 +1,26 @@
+// ---------------- Bluetooth (RemoteXY) ----------------
+#define REMOTEXY_MODE__SOFTSERIAL
+#include <SoftwareSerial.h>
+
+#define REMOTEXY_SERIAL_RX A1
+#define REMOTEXY_SERIAL_TX A2
+#define REMOTEXY_SERIAL_SPEED 9600
+
+#include <RemoteXY.h>
+
+#pragma pack(push, 1)
+uint8_t const PROGMEM RemoteXY_CONF_PROGMEM[] =
+{ 255,1,0,11,0,31,0,19,0,0,0,0,27,1,106,200,1,1,2,0,
+  67,23,141,66,11,68,64,26,11,1,36,54,34,34,1,2,64,0 };
+#pragma pack(pop)
+
+struct {
+  uint8_t button_01;
+  char value_01[11];
+  uint8_t connect_flag;
+} RemoteXY;
+
+// ---------------- LIBRARIES ----------------
 #include <SPI.h>
 #include <MFRC522.h>
 #include <Keypad.h>
@@ -38,27 +61,22 @@ String correctPIN = "1234";
 String inputPIN = "";
 String lastOpenedBy = "None";
 
+// ---------------- STATE ----------------
 bool unlocked = false;
-
-// ---------------- TIMING  ----------------
 unsigned long unlockTime = 0;
-bool unlockActive = false;
+const unsigned long unlockDuration = 5000;
 
-// ---------------- BLUETOOTH EDGE DETECTION ----------------
-bool lastButtonState = false;
-
-// ---------------- LOCK FUNCTION ----------------
+// ---------------- LOCK ----------------
 void lockDoor()
 {
   digitalWrite(LOCK_BUZZER_PIN, LOW);
   unlocked = false;
-  unlockActive = false;
 
   lcd.clear();
   lcd.print("Door Locked");
 }
 
-// ---------------- UNLOCK FUNCTION ----------------
+// ---------------- UNLOCK ----------------
 void unlockDoor(String source)
 {
   digitalWrite(LOCK_BUZZER_PIN, HIGH);
@@ -73,7 +91,6 @@ void unlockDoor(String source)
   lcd.print(source);
 
   unlockTime = millis();
-  unlockActive = true;
 }
 
 // ---------------- RFID CHECK ----------------
@@ -121,20 +138,17 @@ void loop()
 {
   RemoteXY_Handler();
 
-  // ---------------- BLUETOOTH  ----------------
-  bool currentButtonState = (RemoteXY.connect_flag && RemoteXY.button_01 != 0);
-
-  if (currentButtonState && !lastButtonState)
-  {
-    unlockDoor("Bluetooth");
-  }
-
-  lastButtonState = currentButtonState;
-
-  // ---------------- AUTO RE-LOCK  ----------------
-  if (unlockActive && (millis() - unlockTime >= 5000))
+  // ---------------- AUTO LOCK (5 seconds) ----------------
+  if (unlocked && millis() - unlockTime >= unlockDuration)
   {
     lockDoor();
+  }
+
+  // ---------------- BLUETOOTH (SIMPLE + SAFE) ----------------
+  if (RemoteXY.connect_flag && RemoteXY.button_01)
+  {
+    unlockDoor("Bluetooth");
+    RemoteXY.button_01 = 0;   // prevents spam
   }
 
   // ---------------- RFID ----------------
