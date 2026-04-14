@@ -61,7 +61,7 @@ String correctPIN = "1234";
 String inputPIN = "";
 String lastOpenedBy = "None";
 
-// ---------------- STATE ----------------
+// ---------------- functions ----------------
 bool unlocked = false;
 unsigned long unlockTime = 0;
 const unsigned long unlockDuration = 5000;
@@ -144,11 +144,11 @@ void loop()
     lockDoor();
   }
 
-  // ---------------- BLUETOOTH (SIMPLE + SAFE) ----------------
+  // ---------------- BLUETOOTH  ----------------
   if (RemoteXY.connect_flag && RemoteXY.button_01)
   {
     unlockDoor("Bluetooth");
-    RemoteXY.button_01 = 0;   // prevents spam
+    RemoteXY.button_01 = 0;   
   }
 
   // ---------------- RFID ----------------
