@@ -34,7 +34,7 @@ struct {
 
 // ---------------- RFID ----------------
 MFRC522 rfid(SS_PIN, RST_PIN);
-byte allowedUID[] = {0xDE, 0xAD, 0xBE, 0xEF};
+byte allowedUID[4] = {0x00, 0xEC, 0x75, 0x1B};
 const byte uidSize = 4;
 
 // ---------------- LCD ----------------
@@ -101,19 +101,21 @@ bool checkRFID()
 
   if (rfid.uid.size != uidSize) return false;
 
-  for (byte i = 0; i < uidSize; i++)
+
+  for (byte i = 0; i < rfid.uid.size; i++)
   {
     if (rfid.uid.uidByte[i] != allowedUID[i])
     {
-      rfid.PICC_HaltA();
+      rfid.PICC_HaltA(); //stops rfid from continuing to read card
+      rfid.PCD_StopCrypto1(); //resets rfid
       return false;
     }
   }
 
-  rfid.PICC_HaltA();
+  rfid.PICC_HaltA();  //stops rfid from continuing to read card
+  rfid.PCD_StopCrypto1(); //resets rfid
   return true;
 }
-
 // ---------------- SETUP ----------------
 void setup()
 {
