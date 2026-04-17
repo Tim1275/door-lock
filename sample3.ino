@@ -1,3 +1,5 @@
+//Multi-Access Door Lock Code by Yousif Atia, Tim Bureac, Isaac Carlson
+//
 // ---------------- Bluetooth (RemoteXY) ----------------
 #define REMOTEXY_MODE__SOFTSERIAL
 #include <SoftwareSerial.h>
