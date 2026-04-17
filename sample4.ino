@@ -34,7 +34,7 @@ struct {
 
 // ---------------- RFID ----------------
 MFRC522 rfid(SS_PIN, RST_PIN);
-byte allowedUID[] = {0xDE, 0xAD, 0xBE, 0xEF};
+byte allowedUID[] = {0x00, 0xEC, 0x75, 0x1B};
 const byte uidSize = 4;
 
 // ---------------- LCD ----------------
