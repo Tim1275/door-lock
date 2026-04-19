@@ -10,17 +10,27 @@
 
 #include <RemoteXY.h>
 
-#pragma pack(push, 1)
-uint8_t const PROGMEM RemoteXY_CONF_PROGMEM[] =
-{ 255,1,0,11,0,31,0,19,0,0,0,0,27,1,106,200,1,1,2,0,
-  67,23,141,66,11,68,64,26,11,1,36,54,34,34,1,2,64,0 };
-#pragma pack(pop)
-
+// RemoteXY GUI configuration  
+#pragma pack(push, 1)  
+uint8_t const PROGMEM RemoteXY_CONF_PROGMEM[] =   // 46 bytes V19 
+  { 255,1,0,11,0,31,0,19,0,0,0,0,27,1,106,200,1,1,2,0,
+  67,23,141,66,11,68,64,26,11,1,36,54,34,34,1,2,64,0
+  };
+  
 struct {
-  uint8_t button_01;
-  char value_01[11];
-  uint8_t connect_flag;
-} RemoteXY;
+
+    // input variables
+  uint8_t button_01; // =1 if state is ON, else =0, from 0 to 1
+
+    // output variables
+  char value_01[11]; // string UTF8 end zero
+
+    // other variable
+  uint8_t connect_flag;  // =1 if wire connected, else =0
+
+} RemoteXY;   
+#pragma pack(pop)
+ 
 
 // ---------------- LIBRARIES ----------------
 #include <SPI.h>
@@ -46,7 +56,8 @@ LiquidCrystal_I2C lcd(0x27, 16, 2);
 const byte ROWS = 4;
 const byte COLS = 4;
 
-char keys[ROWS][COLS] = {
+char keys[ROWS][COLS] = 
+{
   {'1','2','3','A'},
   {'4','5','6','B'},
   {'7','8','9','C'},
@@ -63,8 +74,8 @@ String correctPIN = "1234";
 String inputPIN = "";
 String lastOpenedBy = "None";
 
-// ---------------- functions ----------------
-bool unlocked = false;
+// ---------------- Function ----------------
+bool unlocked = false; 
 unsigned long unlockTime = 0;
 const unsigned long unlockDuration = 5000;
 
@@ -92,7 +103,7 @@ void unlockDoor(String source)
   lcd.setCursor(0, 1);
   lcd.print(source);
 
-  unlockTime = millis();
+  unlockTime = millis();  // start timer
 }
 
 // ---------------- RFID CHECK ----------------
@@ -103,21 +114,19 @@ bool checkRFID()
 
   if (rfid.uid.size != uidSize) return false;
 
-
-  for (byte i = 0; i < rfid.uid.size; i++)
+  for (byte i = 0; i < uidSize; i++)
   {
     if (rfid.uid.uidByte[i] != allowedUID[i])
     {
-      rfid.PICC_HaltA(); //stops rfid from continuing to read card
-      rfid.PCD_StopCrypto1(); //resets rfid
+      rfid.PICC_HaltA();
       return false;
     }
   }
 
-  rfid.PICC_HaltA();  //stops rfid from continuing to read card
-  rfid.PCD_StopCrypto1(); //resets rfid
+  rfid.PICC_HaltA();
   return true;
 }
+
 // ---------------- SETUP ----------------
 void setup()
 {
@@ -142,26 +151,26 @@ void loop()
 {
   RemoteXY_Handler();
 
-  // ---------------- AUTO LOCK (5 seconds) ----------------
+  // ---- AUTO LOCK (5 seconds) ----
   if (unlocked && millis() - unlockTime >= unlockDuration)
   {
     lockDoor();
   }
 
-  // ---------------- BLUETOOTH  ----------------
+  // ---- BLUETOOTH ----
   if (RemoteXY.connect_flag && RemoteXY.button_01)
   {
     unlockDoor("Bluetooth");
-    RemoteXY.button_01 = 0;   
+    RemoteXY.button_01 = 0;
   }
 
-  // ---------------- RFID ----------------
+  // ---- RFID ----
   if (!unlocked && checkRFID())
   {
     unlockDoor("RFID");
   }
 
-  // ---------------- KEYPAD ----------------
+  // ---- KEYPAD ----
   char key = keypad.getKey();
 
   if (key)
@@ -177,7 +186,13 @@ void loop()
       else
       {
         lcd.print("Wrong PIN");
-        delay(800);
+
+        unsigned long wrongTime = millis();
+        while (millis() - wrongTime < 800)
+        {
+          RemoteXY_Handler();  // keep Bluetooth alive
+        }
+
         lockDoor();
       }
       inputPIN = "";
