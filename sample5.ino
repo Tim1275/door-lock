@@ -73,6 +73,7 @@ Keypad keypad = Keypad(makeKeymap(keys), rowPins, colPins, ROWS, COLS);
 
 // ---------------- SECURITY ----------------
 String correctPIN = "1234"; //pin unlock code
+String correctPIN2 = "0000"; //second unlock code
 String inputPIN = ""; //variable for entered pin
 String lastOpenedBy = "None"; //variable for who opened lock
 
@@ -162,14 +163,14 @@ void loop()
   // ---- BLUETOOTH ----
   if (RemoteXY.connect_flag && RemoteXY.button_01) //if bluetooth is connected and remotexy button is pressed, unlock door
   {
-    unlockDoor("Bluetooth");
+    unlockDoor("Yousif");
     RemoteXY.button_01 = 0;
   }
 
   // ---- RFID ----
   if (!unlocked && checkRFID()) //if door is not unlocked and checkrfid returns true, unlock door
   {
-    unlockDoor("RFID");
+    unlockDoor("Isaac");
   }
 
   // ---- KEYPAD ----
@@ -183,7 +184,11 @@ void loop()
     {
       if (inputPIN == correctPIN) //if pin is correct, unlock door
       {
-        unlockDoor("PIN");
+        unlockDoor("Tim");
+      }
+      else if ((inputPIN == correctPIN2)
+      {
+        unlockDoor("Dog Walker")
       }
       else //if pin is incorrect, else statement prints Wrong PIN, waits 0.8 second, and the locks door
       {
