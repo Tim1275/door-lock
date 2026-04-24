@@ -188,7 +188,7 @@ void loop()
       }
       else if (inputPIN == correctPIN2)
       {
-        unlockDoor("Dog Walker");
+        unlockDoor("Dr. Liu");
       }
       else //if pin is incorrect, else statement prints Wrong PIN, waits 0.8 second, and the locks door
       {
