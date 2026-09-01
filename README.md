@@ -19,17 +19,13 @@ To solve this problem, we designed a multi-access lock that tells you who is ope
 This provides a person with multiple trackable ways to allow someone to unlock their door. 
 And it provides security for their home.
 ​
-<p>
-
-
-
-
-
-
-
-
-  
-</p>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
 
 
 Here is a project demonstration:
