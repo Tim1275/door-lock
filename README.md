@@ -9,9 +9,22 @@ It used an RFID reader, 4x4 Keypad, LCD, Solenoid Lock, and a Bluetooth Module.
 <img width="350" height="340" alt="image" src="https://github.com/user-attachments/assets/438ace81-6953-4f95-bae5-eaa08e17a816" />
 </p>
 
+Our Problem Description:
+To have someone unlock your door you must give them keys or a passcode. That creates a possibility of keys getting
+stolen or a passcode being used maliciously.​
+
+To solve this problem, we designed a multi-access lock that tells you who is opening your door.​
+
+This provides a person with multiple trackable ways to allow someone to unlock their door. 
+And it provides security for their home.
+​
+
+
 Here is a project demonstration:
 
 
 https://github.com/user-attachments/assets/3cd9639d-69f1-4213-b7b7-45b8a7804e22
+
+
 
 
