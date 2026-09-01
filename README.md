@@ -9,7 +9,9 @@ It used an RFID reader, 4x4 Keypad, LCD, Solenoid Lock, and a Bluetooth Module.
 <img width="350" height="340" alt="image" src="https://github.com/user-attachments/assets/438ace81-6953-4f95-bae5-eaa08e17a816" />
 </p>
 
+Here is a project demonstration:
 
+<p align="center">
 https://github.com/user-attachments/assets/3cd9639d-69f1-4213-b7b7-45b8a7804e22
-
+</p>
 
