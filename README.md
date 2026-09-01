@@ -10,6 +10,7 @@ It used an RFID reader, 4x4 Keypad, LCD, Solenoid Lock, and a Bluetooth Module.
 </p>
 
 Our Problem Description:
+
 To have someone unlock your door you must give them keys or a passcode. That creates a possibility of keys getting
 stolen or a passcode being used maliciously.​
 
